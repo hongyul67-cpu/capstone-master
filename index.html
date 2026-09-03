@@ -4,8 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>캡스톤디자인 진행판</title>
-<!-- 수업용 「모두 같은 문제」 — 다른 공용 스크립트보다 먼저 -->
-<script src="https://hongyul67-cpu.github.io/links/fixorder.js"></script>
+<!-- fixorder.js 는 붙이지 않습니다 — 이 도구에는 무작위로 뽑는 문항이 없습니다. -->
 <style>
   :root{
     --bg:#f5f6f8; --card:#fff; --line:#e2e5ea; --tx:#1c2430; --dim:#6b7684;
@@ -14,15 +13,14 @@
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--tx);
        font:15px/1.65 "Pretendard","맑은 고딕",system-ui,sans-serif}
-  .wrap{max-width:860px;margin:0 auto;padding:16px 14px 90px}
+  .wrap{max-width:900px;margin:0 auto;padding:16px 14px 96px}
 
-  header{display:flex;align-items:center;gap:10px;margin:6px 0 14px}
+  header{display:flex;align-items:baseline;gap:10px;margin:6px 0 12px;flex-wrap:wrap}
   header h1{font-size:20px;margin:0;font-weight:800}
   header .sub{color:var(--dim);font-size:13px}
 
-  /* 탭 — class-mode.js 가 .tab 을 인식합니다 */
   .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
-  .tab{padding:9px 14px;border:1px solid var(--line);border-radius:999px;background:var(--card);
+  .tab{padding:9px 13px;border:1px solid var(--line);border-radius:999px;background:var(--card);
        cursor:pointer;font-weight:700;font-size:14px;color:var(--dim)}
   .tab.on{background:var(--pri);border-color:var(--pri);color:#fff}
 
@@ -31,32 +29,85 @@
   .card h3{margin:0 0 8px;font-size:16px}
   .card .body{color:#333}
   .kw{background:#eef4ff;color:#1d4ed8;border-radius:6px;padding:1px 6px;font-weight:700}
+  .star{color:#b45309;font-weight:900}
 
   .btn{border:1px solid var(--line);background:var(--card);border-radius:10px;
-       padding:10px 16px;font-weight:700;cursor:pointer;font-size:14px}
+       padding:10px 16px;font-weight:700;cursor:pointer;font-size:14px;color:var(--tx)}
   .btn-primary{background:var(--pri);border-color:var(--pri);color:#fff}
+  .btn-sm{padding:6px 11px;font-size:13px;border-radius:8px}
   .btn:disabled{opacity:.5;cursor:default}
   .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 
-  /* 문제 — class-mode.js 가 .choice / .explain 을 인식합니다 */
-  .qnum{color:var(--dim);font-size:13px;font-weight:700}
-  .qtext{font-size:17px;font-weight:700;margin:6px 0 12px;line-height:1.5}
-  .choice{display:block;width:100%;text-align:left;border:1px solid var(--line);background:var(--card);
-          border-radius:10px;padding:12px 14px;margin-bottom:8px;cursor:pointer;font-size:15px}
-  .choice:hover{border-color:var(--pri)}
-  .choice.correct{border-color:var(--ok);background:#eafaf1}
-  .choice.wrong{border-color:var(--no);background:#fdeeee}
-  .choice.picked{border-width:2px}
-  .explain{background:#f8fafc;border-left:3px solid var(--pri);border-radius:0 8px 8px 0;
-           padding:10px 14px;margin-top:10px;color:#334}
-  .progress{height:8px;background:#e8ebf0;border-radius:99px;overflow:hidden;margin:10px 0 16px}
-  .progress > i{display:block;height:100%;background:var(--pri);width:0;transition:width .25s}
+  .progress{height:9px;background:#e8ebf0;border-radius:99px;overflow:hidden;margin:8px 0 4px}
+  .progress > i{display:block;height:100%;background:var(--pri);width:0;transition:width .3s}
 
-  .empty{color:var(--dim);text-align:center;padding:34px 10px}
-  .score{font-size:34px;font-weight:900;letter-spacing:-1px}
-  .muted{color:var(--dim);font-size:13px}
   .pill{display:inline-block;background:#eef1f5;border-radius:99px;padding:2px 10px;
         font-size:12px;font-weight:700;color:var(--dim)}
+  .pill.ms{background:#ede9fe;color:#5b21b6}
+  .pill.wk{background:#e0f2fe;color:#075985}
+  .pill.dn{background:#dcfce7;color:#166534}
+  .muted{color:var(--dim);font-size:13px}
+  .score{font-size:32px;font-weight:900;letter-spacing:-1px}
+
+  table{border-collapse:collapse;width:100%;font-size:14px}
+  th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+  th{background:#f3f5f8;font-weight:700;color:#38414d}
+  .tblwrap{overflow-x:auto}
+
+  input[type=text],input[type=number],textarea,select{width:100%;border:1px solid var(--line);
+        border-radius:8px;padding:8px 10px;font:14px/1.5 inherit;background:#fff;color:var(--tx)}
+  textarea{resize:vertical;min-height:54px}
+  label.fld{display:block;margin:9px 0 0}
+  label.fld > span{display:block;font-size:12.5px;font-weight:700;color:var(--dim);margin-bottom:3px}
+
+  .out{display:flex;align-items:flex-start;gap:9px;border:1px solid var(--line);border-radius:10px;
+       padding:9px 11px;margin-bottom:7px;cursor:pointer;background:#fff}
+  .out:hover{border-color:var(--pri)}
+  .out.on{border-color:var(--ok);background:#f2fbf6}
+  .out input{margin:3px 0 0;width:17px;height:17px;flex:0 0 auto;accent-color:#12a150}
+  .out .t{font-weight:700}
+
+  .sess{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:10px;overflow:hidden}
+  .sess.done{border-color:#a7e3c2}
+  .sesshd{display:flex;gap:10px;align-items:center;padding:13px 15px;cursor:pointer}
+  .sesshd .no{flex:0 0 auto;width:40px;height:40px;border-radius:11px;background:#eef4ff;color:#1d4ed8;
+              font-weight:900;display:flex;align-items:center;justify-content:center;font-size:13px}
+  .sess.done .sesshd .no{background:#dcfce7;color:#166534}
+  .sesshd .ti{flex:1 1 auto;min-width:0}
+  .sesshd .ti b{display:block;font-size:15px;line-height:1.4}
+  .sesshd .ar{flex:0 0 auto;color:var(--dim);font-size:13px}
+  .sessbd{padding:2px 15px 15px;border-top:1px dashed var(--line)}
+
+  .step{border-left:3px solid #dfe3ea;padding:2px 0 2px 11px;margin:10px 0}
+  .step .sh{font-weight:800;font-size:13.5px;color:#38414d}
+  .step ul{margin:3px 0 0;padding-left:17px}
+  .step li{margin:2px 0;font-size:14px}
+  .step .who{font-size:12px;font-weight:800;color:var(--dim);margin-top:6px}
+
+  .msbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+  .msbar > div{flex:1 1 132px;border:1px solid var(--line);background:var(--card);border-radius:11px;padding:9px 11px}
+  .msbar b{display:block;font-size:13.5px}
+  .msbar .pc{font-size:12px;color:var(--dim)}
+  .msbar > div.full{border-color:#a7e3c2;background:#f2fbf6}
+
+  .logitem{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px;background:#fff}
+  .logitem .hd{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:2px}
+  .empty{color:var(--dim);text-align:center;padding:34px 10px}
+
+  .warnbox{background:#fff8e6;border:1px solid #f6d98a;border-radius:10px;padding:10px 13px;margin:10px 0;font-size:14px}
+  .okbox{background:#f2fbf6;border:1px solid #a7e3c2;border-radius:10px;padding:10px 13px;margin:10px 0;font-size:14px}
+
+  .rate{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
+  .rate button{flex:1 1 auto;min-width:60px;border:1px solid var(--line);background:#fff;border-radius:8px;
+        padding:7px 4px;font-size:13px;font-weight:700;cursor:pointer;color:var(--dim)}
+  .rate button.on{background:var(--pri);border-color:var(--pri);color:#fff}
+
+  @media print{
+    .tabs,.btn,#rb-btn,.cm-launch,#fxSnd,#bb-btn,.tr-btn,#rk-badge,.noprint{display:none!important}
+    body{background:#fff}
+    .wrap{max-width:none;padding:0}
+    .card,.sess,.logitem{break-inside:avoid;border-color:#999}
+  }
 </style>
 </head>
 <body>
@@ -68,10 +119,12 @@
   </header>
 
   <div class="tabs">
-    <button class="tab on" data-view="learn">📖 배우기</button>
-    <button class="tab"    data-view="practice">✏️ 연습 8문항</button>
-    <button class="tab"    data-view="exam">🏁 종합시험 20문항</button>
-    <button class="tab"    data-view="wrong">📕 오답노트</button>
+    <button class="tab on" data-view="guide">📋 수업 안내</button>
+    <button class="tab"    data-view="board">🗓️ 주차 진행판</button>
+    <button class="tab"    data-view="team">🧑‍🤝‍🧑 팀 · 역할</button>
+    <button class="tab"    data-view="ailog">🤖 AI 활용 로그</button>
+    <button class="tab"    data-view="peer">🎤 발표 상호평가</button>
+    <button class="tab"    data-view="score">📊 평가 기준</button>
   </div>
 
   <div id="view"></div>
@@ -79,58 +132,467 @@
 
 <script>
 /* ══════════════════════════════════════════════════════════════
-   캡스톤디자인 진행판
+   캡스톤디자인 진행판 — 스마트팩토리과 3학년 · 50분 × 15차시 · 3인 팀
+
+   문제를 푸는 도구가 아니라 「프로젝트 진행을 기록하는 도구」입니다.
+   내용의 원본은 2026 3학년 프로젝트 수업 지도안 2종입니다.
+     · 2번_캡스톤디자인_지도안.docx        → 목표 · 마일스톤 · 역할 · 발표 요건 · 평가 기준
+     · 2번_캡스톤디자인_차시별운영안.docx  → 아래 SESSIONS 15차시 전부
+   문구는 지도안 표현을 그대로 옮겼습니다. 임의로 바꾸지 마세요.
    규약: https://github.com/hongyul67-cpu/links/blob/master/CONVENTIONS.md
-   고칠 곳은 아래 LEARN / QUESTIONS 두 배열뿐입니다.
    ══════════════════════════════════════════════════════════════ */
 
-/* ── 1) 배우기 — 정답을 다 보여 주는 단계. 테스트보다 반드시 앞에 ── */
-const LEARN = [
-  { unit:'1단원', t:'첫 번째 개념', body:
-    '교과서 표현을 그대로 쓰고, 필요하면 짧은 보충만 덧붙입니다. ' +
-    '핵심어는 <span class="kw">이렇게</span> 강조합니다.' },
-  { unit:'1단원', t:'두 번째 개념', body:
-    '그림이 필요하면 <b>SVG 를 직접 그려</b> 넣습니다(외부 이미지 링크는 깨집니다).' },
+/* ── 마일스톤 (지도안 Ⅲ) ── */
+const MS = [
+  { g:'kick', name:'킥오프',       week:'1~3주',
+    act:'오리엔테이션 + 재료/장비 파악 + AI로 프로젝트 후보 탐색 + 팀 구성 + 역할 분담',
+    out:['팀 구성표','역할 분담표','AI 탐색 로그'] },
+  { g:'m1',   name:'M1 주제 확정',  week:'4~5주',
+    act:'AI 탐색 결과 바탕으로 팀 논의 → 최종 주제 선정 → 기획서 1쪽 작성 → 주제 발표',
+    out:['프로젝트 기획서 (A4 1쪽)','주제 발표 자료'] },
+  { g:'m2',   name:'M2 설계 검토',  week:'6~8주',
+    act:'회로/기구 설계 → AI로 설계 검토 요청 → 부품 목록 확정 → 설계도 제출',
+    out:['설계도 (회로/기구)','부품 목록표'] },
+  { g:'m3',   name:'M3 프로토타입', week:'9~11주',
+    act:'실제 제작 진행 → 주간 문제해결 세션 → 부분 시연 가능 수준 완성',
+    out:['작동 영상 또는 부분 시연','AI 활용 로그 (누적)'] },
+  { g:'m4',   name:'M4 비판 검토',  week:'12~13주',
+    act:'AI 비판자 역할 부여 → 약점 3가지 이상 도출 → 타당성 판단 → 수정 적용',
+    out:['보완 전·후 비교 기록','수정 이력'] },
+  { g:'final',name:'최종 발표',     week:'14~16주',
+    act:'발표 자료 제작(AI 활용 슬라이드 必 포함) → 리허설 → 최종 발표(팀당 10분) + Q&A',
+    out:['발표 자료','AI 활용 포트폴리오'] },
 ];
 
-/* ── 2) 문항 — a 는 정답 보기의 번호(0부터) ──
-      ⚠ 발문·보기·해설 어디에도 정답을 흘리지 말 것.
-        캡션("절단선을 보고 고르시오")이 답을 알려 주는 사고가 실제로 있었습니다. */
-const QUESTIONS = [
-  { unit:'1단원',
-    q:'여기에 발문을 씁니다. 한 값만 가리키도록 씁니다.',
-    ch:['보기 1','보기 2','보기 3','보기 4'],
-    a:1,
-    ex:'왜 그 답인지 — 학생이 혼자 읽고 이해할 만큼.' },
-  { unit:'1단원',
-    q:'두 번째 문항.',
-    ch:['보기 1','보기 2','보기 3','보기 4'],
-    a:0,
-    ex:'해설.' },
+/* ── 수업 목표 (지도안 Ⅱ) ── */
+const GOALS = [
+  '보유 재료·장비를 파악하고 AI와 협력하여 실현 가능한 프로젝트 주제를 선정할 수 있다.',
+  '팀 역할을 분담하고 마일스톤별 계획을 수립하여 1학기 동안 프로젝트를 완성할 수 있다.',
+  '진행 중 발생하는 기술적·문서적 문제를 AI를 통해 해결하고 그 과정을 기록할 수 있다.',
+  '최종 발표에서 결과물과 AI 활용 과정을 함께 설명할 수 있다.',
 ];
 
-/* ── 3) 설정 ── */
-const CFG = {
-  practiceN : 8,     // 연습 문항 수
-  examN     : 20,    // 종합시험 문항 수 (규약)
-  storeKey  : 'capstone-master_v1',
-};
+/* ── 주제 탐색 단계 (지도안 Ⅳ) ── */
+const EXPLORE = [
+  { n:1, t:'재료·장비 목록 작성',
+    c:'학교 보유 재료를 팀이 직접 조사하여 목록화. AI에게 ‘이 재료들로 만들 수 있는 스마트팩토리 관련 프로젝트 5가지를 난이도와 함께 알려줘’로 질문.' },
+  { n:2, t:'AI 탐색 결과 팀 논의',
+    c:'AI 제안 중 ‘실현 가능성 / 흥미도 / 차별성’ 3기준으로 팀 논의. 교사는 현실적 피드백 제공.' },
+  { n:3, t:'주제 확정 및 기획서 제출',
+    c:'최종 주제 1개 선정 → AI로 기획서 초안 작성 → 팀이 직접 수정 → 교사 승인 후 확정.' },
+];
 
-/* ══════════════ 여기부터는 대개 손대지 않습니다 ══════════════ */
+/* ── 역할 분담 가이드 (지도안 Ⅴ) ── */
+const ROLES = [
+  { key:'기계/하드웨어 담당', job:'기구 설계, 3D 모델링, 조립 및 제작',
+    ai:'‘이 구조에서 하중 분산이 될지 계산해줘’, ‘3D 프린팅에 적합한 두께는?’' },
+  { key:'전자/코딩 담당',     job:'회로 설계, 아두이노·파이썬 코드 작성 및 디버깅',
+    ai:'‘이 센서 코드에서 오류가 나는 이유를 설명해줘’, ‘PID 제어 코드 예시 보여줘’' },
+  { key:'문서/발표 담당',     job:'회의록, 기획서, 발표 자료 작성 및 일정 관리',
+    ai:'‘회의 메모를 정식 회의록으로 정리해줘’, ‘발표 슬라이드 목차 5장 잡아줘’' },
+];
+
+/* ── 최종 발표 필수 슬라이드 (지도안 Ⅵ) ── */
+const SLIDES = [
+  { n:1, t:'프로젝트 개요',       c:'주제, 선정 이유, 팀원 역할', must:false },
+  { n:2, t:'설계 및 제작 과정',   c:'설계도, 주요 제작 단계, 어려웠던 점', must:false },
+  { n:3, t:'결과물 시연',         c:'작동 영상 또는 실물 시연', must:false },
+  { n:4, t:'AI 활용 과정',        c:'어떤 문제를 AI로 해결했는가 / AI가 틀린 부분은 무엇이었나 / 어떻게 수정했나', must:true },
+  { n:5, t:'배운 점 & 개선 방향', c:'팀원 각자의 성장 포인트, 추가 개발 아이디어', must:false },
+];
+
+/* ── 평가 기준 (지도안 Ⅶ) — 합계 100점 ── */
+const SCORE = [
+  { area:'주제 선정 과정 (AI 탐색 포함)', pt:15, std:'AI 탐색 로그가 충실하고, 팀 논의를 거쳐 타당한 주제를 선정했는가', how:'AI 탐색 로그 + 기획서' },
+  { area:'마일스톤별 산출물',             pt:30, std:'각 마일스톤 산출물(기획서·설계도·프로토타입·비판검토)을 기한 내 제출했는가', how:'산출물 제출 이력' },
+  { area:'제작 완성도',                   pt:25, std:'프로토타입이 설계 의도대로 동작하는가 (부분 동작 시 점수 부여)', how:'최종 시연' },
+  { area:'AI 활용 로그',                  pt:15, std:'문제해결 세션 참여 및 AI 활용 과정을 성실하게 기록했는가', how:'AI 활용 로그 (누적)' },
+  { area:'최종 발표',                     pt:15, std:'AI 활용 과정 슬라이드 포함, 결과물과 배운 점을 명확하게 발표했는가', how:'발표 평가표' },
+];
+
+/* ── 지도 시 유의사항 (지도안 Ⅷ) ── */
+const CAUTION = [
+  '초반 역할 분담은 1차시 내에 완료. 역할 분담표를 제출하지 않으면 팀 활동 미인정.',
+  'AI 탐색 단계에서 ‘재료 목록 → AI 질문 → 팀 논의 → 주제 선정’ 흐름을 반드시 거쳐야 한다. AI가 단독으로 주제를 결정하지 않도록 지도.',
+  '마일스톤 산출물은 기한 준수가 원칙. 기한 초과 시 해당 항목 감점 적용.',
+  '완성도가 낮은 프로토타입도 ‘과정 기록’이 충실하면 부분 점수 인정. 결과보다 과정 중심 평가 원칙.',
+  '발표 시 ‘AI 활용 과정’ 슬라이드 미포함 팀은 발표 점수 최대 30% 감점.',
+];
+
+/* ── 발표 상호평가 항목 (14·15차시 동료 평가표) ── */
+const PEER = [
+  { id:'p1', t:'주제와 목표가 분명한가',                  h:'무엇을 왜 만들었는지 알아들을 수 있었나' },
+  { id:'p2', t:'설계·제작 과정을 근거를 들어 설명했는가',  h:'설계도·부품·어려웠던 점이 나왔나' },
+  { id:'p3', t:'결과물이 설계 의도대로 동작했는가',        h:'부분 동작도 인정. 무엇이 되고 무엇이 안 됐는지 말했나' },
+  { id:'p4', t:'AI 활용 과정을 구체적으로 밝혔는가',       h:'AI가 틀린 부분과 그것을 어떻게 고쳤는지까지 나왔나' },
+  { id:'p5', t:'질의응답에 성실하게 답했는가',             h:'모르는 것을 모른다고 말하고 다음 계획을 밝혔나' },
+];
+const PEER_LV = ['① 아쉬움','② 보통','③ 잘함','④ 매우 잘함'];
+
+/* ── 15차시 (차시별 상세 운영안 전문) ── */
+const SESSIONS = [
+{ n:1, g:'kick', week:'1주차', ms:'킥오프',
+  title:'오리엔테이션 + 팀 구성 + 역할 분담',
+  goal:'캡스톤 디자인 수업의 전체 구조와 평가 기준을 이해하고, 3인 팀을 구성하여 역할을 분담할 수 있다.',
+  out:['팀 구성표','역할 분담표'],
+  steps:[
+    { k:'도입', m:'10분',
+      t:['캡스톤 디자인 수업 목적·평가 기준·마일스톤 5단계 안내',
+         '발표 시 ‘AI 활용 과정’ 슬라이드 필수 포함 강조',
+         '3인 팀 구성 기준 안내: 기계·전자·문서 역할 고려'],
+      s:['수업 전체 구조 확인','팀 구성 희망 사전 조율'] },
+    { k:'전개① 팀 구성', m:'15분',
+      t:['3인 팀 구성 진행 (교사 조율)','팀명 선정 안내',
+         '역할 분담 3가지 설명: 기계/하드웨어 · 전자/코딩 · 문서/발표'],
+      s:['팀 구성 확정','팀명 결정','3인 역할 초안 협의'] },
+    { k:'전개② 역할 분담표', m:'20분',
+      t:['역할 분담표 양식 제시 (역할·담당 업무·AI 활용 계획)',
+         '‘역할은 겸임 가능하나 책임은 명확히’ 강조','순회하며 역할 불균형 팀 조정'],
+      s:['역할 분담표 작성','각자 ‘내가 AI를 어떻게 쓸지’ 1줄 작성','팀원 간 역할 최종 합의'] },
+    { k:'정리', m:'5분',
+      t:['역할 분담표 제출 안내 (이번 차시 내)','다음 차시 예고: 학교 재료·장비 파악'],
+      s:['역할 분담표 제출','다음 차시 조사 준비물 확인'] },
+  ] },
+
+{ n:2, g:'kick', week:'1~2주차', ms:'킥오프',
+  title:'재료·장비 파악 + AI로 프로젝트 후보 탐색',
+  goal:'학교 보유 재료·장비를 조사하고, AI를 활용하여 실현 가능한 프로젝트 후보 5가지를 도출할 수 있다.',
+  out:['재료·장비 목록표','AI 탐색 로그'],
+  steps:[
+    { k:'도입', m:'5분',
+      t:['지난 차시 역할 분담표 확인','‘재료를 먼저 파악해야 현실적인 주제가 나온다’ 강조','재료 조사 양식 배부'],
+      s:['역할 분담표 재확인','재료 조사 양식 수령'] },
+    { k:'전개① 재료 조사', m:'15분',
+      t:['실습실 개방 안내 또는 장비 목록 자료 제공','조사 항목 안내: 장비명·수량·상태·사용 가능 여부',
+         '불확실한 장비 상태 정보 제공'],
+      s:['문서/발표 담당: 재료 목록 기재','전자/코딩 담당: 센서·모듈 종류 확인','기계 담당: 공작기계·3D프린터 가용성 확인'] },
+    { k:'전개② AI 탐색', m:'25분',
+      t:['AI 탐색 프롬프트 시연: ‘아두이노, DHT11, 서보모터, 3D프린터, 초음파센서가 있어. 스마트팩토리 관련 3인팀 1학기 프로젝트 5가지를 난이도·예상 기간·필요 추가 재료와 함께 알려줘’',
+         'AI 탐색 로그 양식 안내','‘실현 가능성이 낮은 제안을 AI가 줄 수 있다’ 주의 강조'],
+      s:['재료 목록 AI에 입력','프로젝트 후보 5가지 도출','각 후보: 실현 가능성·흥미도·차별성 팀 자체 점수 기재','AI 탐색 로그 작성'] },
+    { k:'정리', m:'5분',
+      t:['팀별 관심 후보 1~2가지 간단 발표','다음 차시: 팀 논의 → 주제 확정'],
+      s:['재료 목록표 + AI 탐색 로그 제출','선호 후보 팀 내 사전 토의'] },
+  ] },
+
+{ n:3, g:'m1', week:'2~3주차', ms:'M1 — 주제 확정',
+  title:'팀 논의 + 주제 확정 + 기획서 AI 초안',
+  goal:'AI 탐색 결과를 바탕으로 팀 논의를 거쳐 최종 주제를 선정하고, 기획서 AI 초안을 작성할 수 있다.',
+  out:['프로젝트 기획서 초안 (A4 1쪽)'],
+  steps:[
+    { k:'도입', m:'5분',
+      t:['AI 탐색 결과 팀별 간단 공유','‘실현 가능성 / 흥미도 / 차별성’ 3기준 재안내','비현실적 주제 사전 경고 예시 제시'],
+      s:['AI 탐색 로그 꺼내기','3기준 점수 재확인'] },
+    { k:'전개① 팀 논의', m:'15분',
+      t:['순회하며 주제 현실성 피드백','‘1학기 50분 수업 16회 안에 완성 가능한가?’ 기준 강조','주제 좁히기: 상위 2개 → 최종 1개'],
+      s:['상위 2개 후보 팀 토의','각 후보 장단점 정리','최종 주제 1개 확정 및 한 문장 표현'] },
+    { k:'전개② 기획서 AI 초안', m:'25분',
+      t:['기획서 필수 항목 안내: 주제·목표·재료·역할분담·월별 일정·기대 효과',
+         '기획서 AI 프롬프트 시연: ‘너는 직업계고 프로젝트 기획 전문가야. [주제]에 대한 기획서를 A4 1장으로 작성해줘. 목표·재료 목록·3인 역할분담·월별 일정표 포함’',
+         '‘일정이 비현실적으로 나오면 직접 수정’ 강조'],
+      s:['확정 주제로 기획서 AI 초안 생성','우리 상황과 다른 부분 형광펜 표시','직접 수정 또는 AI에게 수정 요청','역할 분담 항목 3인 기준으로 정확히 수정'] },
+    { k:'정리', m:'5분',
+      t:['기획서 제출 기한 안내 (다음 캡스톤 수업 전)','AI 활용 로그 기재 안내'],
+      s:['기획서 초안 저장','AI 활용 로그 1줄 작성'] },
+  ] },
+
+{ n:4, g:'m1', week:'3~4주차', ms:'M1 — 주제 확정 발표',
+  title:'주제 확정 발표 + 기획서 최종 제출',
+  goal:'팀별 프로젝트 주제를 발표하고 교사·동료 피드백을 반영하여 기획서를 최종 완성할 수 있다.',
+  out:['기획서 최종본','주제 발표 자료'],
+  steps:[
+    { k:'도입', m:'5분',
+      t:['발표 시간 안내: 팀당 3분 발표 + 2분 Q&A','발표 항목: 주제·선정 이유·재료·역할·예상 일정'],
+      s:['발표 자료 최종 점검','발표 순서 확인'] },
+    { k:'전개① 주제 발표', m:'30분',
+      t:['팀별 발표 진행 (타이머 관리)','발표 후 피드백 1~2가지','청중 팀: 질문 또는 조언 1가지'],
+      s:['팀별 발표 진행','청중: 다른 팀 발표 메모','Q&A 응답'] },
+    { k:'전개② 기획서 보완', m:'10분',
+      t:['발표 중 나온 피드백 정리','AI에게 ‘이 기획서의 허점 2가지 지적해줘’ 추가 검토 시연'],
+      s:['피드백 반영 기획서 수정','AI 비판 검토 추가 반영','기획서 최종본 완성'] },
+    { k:'정리', m:'5분',
+      t:['기획서 최종 제출 안내','다음 차시: 설계 단계 시작'],
+      s:['기획서 최종본 제출','AI 활용 로그 작성'] },
+  ] },
+
+{ n:5, g:'m2', week:'5주차', ms:'M2 — 설계 검토',
+  title:'회로·기구 설계 + AI 설계 검토 요청',
+  goal:'프로젝트의 회로 또는 기구 설계 초안을 작성하고, AI를 활용하여 설계 오류와 개선점을 점검할 수 있다.',
+  out:['설계도 초안','AI 설계 검토 로그'],
+  steps:[
+    { k:'도입', m:'5분',
+      t:['기획서 기반 설계 단계 진입 안내','역할별 이번 차시 목표 안내 — 전자/코딩: 회로 설계 / 기계: 기구 설계 / 문서: 설계 기록'],
+      s:['역할별 오늘 할 일 확인','필요 부품 목록 사전 점검'] },
+    { k:'전개① 설계 작업', m:'20분',
+      t:['Fritzing 또는 손 스케치 설계 방법 안내',
+         '‘설계 단계에서 AI에게 부품 연결 방법 물어보기’ 예시 시연: ‘DHT11과 서보모터를 아두이노 UNO에 동시 연결할 때 주의사항은?’',
+         '순회하며 설계 방향 피드백'],
+      s:['전자/코딩: 회로 설계도 작성','기계: 기구 스케치 또는 3D 모델링 계획','문서: 설계 내용 기록 + AI 질문 프롬프트 작성'] },
+    { k:'전개② AI 설계 검토', m:'20분',
+      t:['AI 설계 검토 요청 시연: ‘이 회로에서 전원 공급이 불안정할 가능성이 있는지 점검해줘. 개선점도 알려줘’',
+         'AI 답변의 기술적 신뢰성 교차 확인 방법 안내 (데이터시트)'],
+      s:['설계도 AI에 설명 → 검토 요청','AI 지적 중 타당한 것 반영','개선된 설계도 수정'] },
+    { k:'정리', m:'5분',
+      t:['설계도 제출 기한 안내','다음 차시: 부품 목록 확정 + 제작 시작'],
+      s:['설계도 초안 저장','AI 설계 검토 로그 작성'] },
+  ] },
+
+{ n:6, g:'m2', week:'6~7주차', ms:'M2 — 설계 검토 제출',
+  title:'부품 목록 확정 + 설계도 최종 제출',
+  goal:'부품 목록을 확정하고 설계도를 최종 완성하여 제출할 수 있다.',
+  out:['부품 목록표','설계도 최종본'],
+  steps:[
+    { k:'도입', m:'5분',
+      t:['지난 차시 AI 설계 검토 결과 팀별 간단 공유','부품 목록 작성 항목 안내: 부품명·수량·보유 여부·구매 필요 여부'],
+      s:['설계도 수정본 꺼내기','부품 목록 양식 확인'] },
+    { k:'전개① 부품 목록', m:'15분',
+      t:['학교 보유 부품 목록 자료 제공','‘구매 필요 부품은 교사에게 사전 승인 필요’ 안내',
+         'AI로 부품 대안 검색 방법 시연: ‘DHT11 대신 쓸 수 있는 온습도 센서 추천해줘. 아두이노 호환 필수’'],
+      s:['부품 목록표 작성','보유/구매 구분','구매 필요 목록 교사 승인 요청'] },
+    { k:'전개② 설계도 최종', m:'25분',
+      t:['AI에게 최종 설계도 한 번 더 검토 요청 시연','설계도 확인 및 승인 (팀별 순회)',
+         '‘설계도와 실제 제작이 달라질 수 있다 — 이력 기록 중요’ 강조'],
+      s:['설계도 최종 수정','교사 확인·승인 받기','부품 목록표 최종 완성'] },
+    { k:'정리', m:'5분',
+      t:['설계도 + 부품 목록 제출 안내','다음 차시: 본격 제작 시작 안내'],
+      s:['설계도 최종본 + 부품 목록표 제출','AI 활용 로그 작성'] },
+  ] },
+
+{ n:7, g:'m3', week:'7~8주차', ms:'M3 — 프로토타입',
+  title:'제작 시작 + AI 코드·회로 문제해결 세션 ①',
+  goal:'설계도를 바탕으로 제작을 시작하고, 초기 단계에서 발생하는 코드·회로 문제를 AI와 함께 해결할 수 있다.',
+  out:['제작 진행 현황','AI 활용 로그'],
+  steps:[
+    { k:'도입', m:'10분',
+      t:['‘이번 주 막힌 것’ 팀별 칠판 키워드 기재','공통 문제 분류 → 전체 공유 여부 결정','오늘 세션 목표: 각 팀 막힌 문제 1개 이상 해결'],
+      s:['칠판에 키워드 기재','다른 팀 문제 참고'] },
+    { k:'전개① AI 문제해결', m:'25분',
+      t:['아두이노 코드 오류 AI 질문 방법 재시연: ‘컴파일 에러 메시지 그대로 붙여넣기 + RCIF’',
+         '회로 문제 질문 예시: ‘서보가 불규칙하게 움직여. 전원 문제일까 코드 문제일까?’',
+         '순회하며 프롬프트 구체성 부족 팀 지도'],
+      s:['전자/코딩: 코드·회로 문제 AI 질문','기계: 기구 조립 중 문제 AI 질문 또는 직접 해결','문서: AI 질문 프롬프트 기록 + 답변 기록'] },
+    { k:'전개② 교차 검토', m:'10분',
+      t:['팀 간 AI 답변 교차 검토 안내','‘데이터시트와 AI 답변이 다르면 데이터시트 우선’ 강조'],
+      s:['옆 팀 AI 답변 검토','의심 답변: 공식 문서 확인'] },
+    { k:'정리', m:'5분',
+      t:['해결된 문제 팀별 공유','다음 주 계획 확인'],
+      s:['AI 활용 로그 기재','다음 주 할 일 1줄 작성'] },
+  ] },
+
+{ n:8, g:'m3', week:'8~9주차', ms:'M3 — 프로토타입',
+  title:'제작 진행 + AI 문제해결 세션 ②',
+  goal:'제작 중반 단계의 기계·전자 통합 문제를 AI를 활용하여 해결하고, 진행 현황을 기록할 수 있다.',
+  out:['제작 진행 현황','AI 활용 로그'],
+  steps:[
+    { k:'도입', m:'10분',
+      t:['‘이번 주 막힌 것’ 키워드 칠판 기재',
+         '‘기계+전자 통합 시 자주 나오는 문제’ 예시 안내 (전원 공급 불안정, 신호 간섭, 기구와 센서 위치 충돌)'],
+      s:['키워드 기재','현재 제작 진행률 팀 내 점검'] },
+    { k:'전개① AI 문제해결', m:'25분',
+      t:['통합 문제 AI 질문 예시 시연: ‘서보모터와 DHT11 동시 사용 시 전원 불안정 원인과 해결책’','해결 어려운 팀 현장 직접 지원'],
+      s:['막힌 통합 문제 AI 질문','답변 적용 → 테스트','안 되면 멀티턴 재질문 또는 교사 도움'] },
+    { k:'전개② 진행 현황 기록', m:'10분',
+      t:['진행 현황 기록 양식 안내: 완료·진행중·미착수','‘부분 동작도 영상으로 기록’ 권장'],
+      s:['진행 현황 기록 작성','작동 부분 영상 촬영'] },
+    { k:'정리', m:'5분',
+      t:['팀별 진행률 공유','다음 차시 목표 확인'],
+      s:['AI 활용 로그 작성','다음 주 계획 1줄'] },
+  ] },
+
+{ n:9, g:'m3', week:'9~10주차', ms:'M3 — 프로토타입',
+  title:'프로토타입 중간 점검 + 부분 시연',
+  goal:'현재 완성된 부분을 시연하고, 미완성 부분의 원인을 분석하여 후반 제작 계획을 수립할 수 있다.',
+  out:['부분 시연 영상','후반 제작 계획'],
+  steps:[
+    { k:'도입', m:'5분',
+      t:['‘완성이 아니어도 괜찮다 — 과정 기록이 평가’ 강조','시연 순서 안내'],
+      s:['시연 준비','시연 가능한 부분 확인'] },
+    { k:'전개① 부분 시연', m:'20분',
+      t:['팀별 현재 작동 부분 시연 (3~4분)','기술적 피드백 + 격려','청중 팀: 질문 또는 조언 1가지'],
+      s:['작동 부분 시연 또는 영상 재생','청중 피드백 수용'] },
+    { k:'전개② 계획 수립', m:'20분',
+      t:['‘남은 주차 동안 무엇을 완성할지’ 팀별 계획 작성 안내',
+         'AI에게 ‘현재 상황에서 남은 3주 동안 현실적인 완성 계획을 세워줘’ 질문 시연','순회하며 무리한 계획 조정'],
+      s:['AI로 후반 제작 계획 초안 생성','팀 현실에 맞게 수정','주차별 목표 1줄씩 작성'] },
+    { k:'정리', m:'5분',
+      t:['팀별 후반 계획 1줄 발표','다음 차시 AI 비판 검토 예고'],
+      s:['후반 제작 계획 제출','AI 활용 로그 작성'] },
+  ] },
+
+{ n:10, g:'m3', week:'10~11주차', ms:'M3 — 프로토타입',
+  title:'제작 마무리 + AI 문제해결 세션 ③',
+  goal:'프로토타입 완성을 위한 마지막 제작 단계에서 발생하는 문제를 AI와 함께 해결할 수 있다.',
+  out:['완성 또는 최대 완성 프로토타입','최종 작동 영상'],
+  steps:[
+    { k:'도입', m:'10분',
+      t:['‘이번 주 막힌 것’ 키워드 기재','‘오늘이 제작 마지막 집중 세션’ 강조','완성 어려운 팀: 범위 축소 방안 논의'],
+      s:['키워드 기재','오늘 완성 목표 팀 내 재확인'] },
+    { k:'전개① AI 문제해결', m:'25분',
+      t:['마무리 단계 자주 발생 문제 예시 제시 (전체 통합 후 오류, 전원 부족, 3D 출력물 조립 오차)','해결 어려운 팀 직접 지원'],
+      s:['마지막 막힌 문제 AI 질문 + 해결','기계+전자 최종 통합 테스트','문서: 최종 결과 기록'] },
+    { k:'전개② 최종 영상', m:'10분',
+      t:['‘작동하는 부분 최대한 담은 영상’ 촬영 안내','영상에 팀명·주제·날짜 자막 권장'],
+      s:['최종 작동 영상 촬영','영상 저장 및 제출 준비'] },
+    { k:'정리', m:'5분',
+      t:['제작 완료 선언 및 다음 단계 안내','AI 비판 검토 단계 예고'],
+      s:['AI 활용 로그 작성','영상 저장'] },
+  ] },
+
+{ n:11, g:'m4', week:'11~12주차', ms:'M4 — AI 비판 검토',
+  title:'AI 비판 검토 — 결과물·기획서 약점 도출',
+  goal:'AI에게 비판자 역할을 부여하여 결과물과 기획서의 약점을 도출하고, 타당성을 판단하여 보완할 수 있다.',
+  out:['보완 전·후 비교 기록'],
+  steps:[
+    { k:'도입', m:'5분',
+      t:['M4 단계 안내: ‘제출 전 마지막 점검’','AI 비판 검토 절차 안내: 역할 부여 → 지적 → 타당성 판단 → 수정'],
+      s:['결과물 현황 팀 내 최종 점검','비판 받을 대상 선택: 결과물·기획서·보고서 중 택1'] },
+    { k:'전개① AI 비판', m:'20분',
+      t:['AI 비판 프롬프트 시연: ‘너는 깐깐한 스마트팩토리 현장 책임자야. 아래 프로젝트의 허점·빠진 부분·현실적 어려운 점을 냉정하게 3가지 이상 지적해줘’',
+         '‘모든 지적을 수용하면 안 된다 — 판단은 사람이’ 강조'],
+      s:['AI 비판 요청','지적 목록 정리','팀 토의: 타당 / 부당 분류'] },
+    { k:'전개② 보완', m:'20분',
+      t:['타당한 지적 반영 수정 안내','순회하며 수정 방향 피드백'],
+      s:['타당한 지적 → 결과물·문서 수정','보완 전·후 비교 기록 작성','부당한 지적도 ‘왜 맞지 않는지’ 1줄 기재'] },
+    { k:'정리', m:'5분',
+      t:['보완 기록 제출 안내','발표 준비 단계 안내'],
+      s:['보완 전·후 비교 기록 제출','AI 활용 로그 작성'] },
+  ] },
+
+{ n:12, g:'m4', week:'12~13주차', ms:'M4 → 발표 준비',
+  title:'발표 자료 AI 제작 + ‘AI 활용 과정’ 슬라이드',
+  goal:'AI를 활용하여 발표 슬라이드 목차와 내용을 작성하고, ‘AI 활용 과정’ 슬라이드를 완성할 수 있다.',
+  out:['발표 자료 초안 (AI 활용 과정 슬라이드 포함)'],
+  steps:[
+    { k:'도입', m:'5분',
+      t:['발표 필수 슬라이드 5가지 재안내','★ ‘AI 활용 과정’ 슬라이드 미포함 시 감점 재강조'],
+      s:['누적 AI 활용 로그 꺼내기','발표 자료 현황 확인','AI 활용 로그 정리'] },
+    { k:'전개① 슬라이드 AI 제작', m:'20분',
+      t:['발표 목차 AI 생성 → 선택 → 내용 상세화 멀티턴 시연','‘고등학생이 이해할 말투로 200자 이내로 줄여줘’ 예시','순회하며 슬라이드 구성 피드백'],
+      s:['발표 목차 AI 생성','슬라이드별 내용 AI 다듬기','결과물 시연 영상 삽입 위치 표시'] },
+    { k:'전개② AI 활용 과정 슬라이드', m:'20분',
+      t:['‘AI 활용 과정’ 슬라이드 예시 제시: ① 어떤 문제가 있었나 ② 어떤 프롬프트를 썼나 ③ AI 답변 요약 ④ AI가 틀린 부분은? ⑤ 최종 어떻게 해결했나',
+         '누적 로그에서 인상적인 사례 2~3개 선택 안내'],
+      s:['누적 AI 활용 로그에서 사례 선택','‘AI 활용 과정’ 슬라이드 작성','팀 검토: ‘발표했을 때 납득이 되나?’'] },
+    { k:'정리', m:'5분',
+      t:['발표 자료 초안 제출 안내','다음 차시: 리허설'],
+      s:['발표 자료 초안 저장','AI 활용 로그 최종 정리'] },
+  ] },
+
+{ n:13, g:'final', week:'13~14주차', ms:'발표 준비',
+  title:'발표 자료 완성 + 리허설',
+  goal:'발표 자료를 최종 완성하고 리허설을 통해 발표 흐름·시간 배분·Q&A를 점검할 수 있다.',
+  out:['최종 발표 자료'],
+  steps:[
+    { k:'도입', m:'5분',
+      t:['발표 평가 루브릭 최종 안내','팀당 발표 시간: 10분 + Q&A 5분'],
+      s:['평가 기준 재확인','발표 역할 분담 확인'] },
+    { k:'전개① 자료 완성', m:'15분',
+      t:['순회하며 발표 자료 최종 피드백','‘AI 활용 과정’ 슬라이드 포함 여부 최종 확인'],
+      s:['피드백 반영 최종 수정','슬라이드 전환·애니메이션 점검'] },
+    { k:'전개② 리허설', m:'25분',
+      t:['팀당 10분 리허설 진행 (타이머)','체크 항목: 시간·목소리·눈 맞춤·시연 흐름','예상 Q&A 2가지 미리 준비 안내'],
+      s:['리허설 진행','팀원 피드백','예상 Q&A 답변 준비'] },
+    { k:'정리', m:'5분',
+      t:['발표 순서 공지 (14~15차시)','최종 자료 제출 기한 안내'],
+      s:['자료 최종 저장 제출','리허설 피드백 반영 계획'] },
+  ] },
+
+{ n:14, g:'final', week:'14~15주차', ms:'최종 발표',
+  title:'최종 발표 ①',
+  goal:'프로젝트 결과물과 AI 활용 과정을 발표하고 질의응답에 성실하게 응할 수 있다.',
+  out:['발표 평가표','동료 평가표'],
+  steps:[
+    { k:'도입', m:'5분',
+      t:['발표 평가표·동료 평가표 배부','발표 순서 최종 안내','‘AI 활용 과정 슬라이드 포함 여부 평가 반영’ 재강조'],
+      s:['평가표 확인','발표 준비 최종 점검'] },
+    { k:'전개 발표', m:'40분',
+      t:['팀당 10분 발표 + 5분 Q&A 진행','타이머·평가표 기재','발표 중 결과물 시연 지원','Q&A 유도 질문 준비'],
+      s:['발표 팀: 결과물 시연 + 슬라이드 발표 + Q&A','청중 팀: 동료 평가표 작성'] },
+    { k:'정리', m:'5분',
+      t:['발표 팀 즉각 피드백 1가지','나머지 발표 팀 안내'],
+      s:['동료 평가표 제출','다음 차시 발표 팀: 최종 점검'] },
+  ] },
+
+{ n:15, g:'final', week:'15~16주차', ms:'최종 발표',
+  title:'최종 발표 ② + 수업 마무리 + 포트폴리오 제출',
+  goal:'나머지 팀 발표를 완료하고, 수업 전체 AI 활용 경험을 성찰하여 포트폴리오를 최종 제출할 수 있다.',
+  out:['AI 활용 포트폴리오 최종본','수업 전체 성찰 소감문'],
+  steps:[
+    { k:'도입', m:'5분',
+      t:['지난 차시 발표 총평','오늘 발표 순서 안내','포트폴리오 제출 항목 최종 안내'],
+      s:['발표 준비 최종 점검','포트폴리오 체크리스트 확인'] },
+    { k:'전개① 발표', m:'25분',
+      t:['나머지 팀 발표 진행 (팀당 10분+5분)','타이머·평가표 관리 + 전체 총평'],
+      s:['발표 진행','청중: 동료 평가표 작성'] },
+    { k:'전개② 성찰·마무리', m:'15분',
+      t:['‘캡스톤을 하면서 AI가 가장 도움이 됐던 순간 / 실망했던 순간’ 자유 발언',
+         '핵심 메시지 3가지 정리: ① AI는 도구, 선택은 팀이 한다 ② 프롬프트 구체성이 결과물 질을 결정한다 ③ 검증 없는 AI 결과물은 위험하다',
+         '포트폴리오 제출 안내'],
+      s:['자유 발언','수업 전체 성찰 소감 작성','AI 활용 포트폴리오 최종 제출'] },
+    { k:'정리', m:'5분',
+      t:['최종 제출물 확인 안내','수고 인사'],
+      s:['포트폴리오 + 동료 평가표 제출','소감문 제출'] },
+  ] },
+];
+
+/* ── AI 활용 로그 한 건에 채우는 5칸 (12차시 ‘AI 활용 과정’ 슬라이드 ①~⑤ 와 같은 구조) ── */
+const LOGF = [
+  { k:'problem', t:'① 어떤 문제가 있었나', ph:'예) 서보가 불규칙하게 떨림' },
+  { k:'prompt',  t:'② 어떤 프롬프트를 썼나', ph:'AI에게 실제로 넣은 문장을 그대로' },
+  { k:'answer',  t:'③ AI 답변 요약',        ph:'핵심만 두세 줄' },
+  { k:'bad',     t:'④ AI가 틀린 부분은?',   ph:'없었으면 ‘없음 — 데이터시트로 확인함’ 처럼' },
+  { k:'fix',     t:'⑤ 최종 어떻게 해결했나', ph:'우리가 실제로 한 조치' },
+];
+const LOG_TARGET = 8;   // 로그 목표 건수 — 충실도(%) 의 분모 기준
+
+const CFG = { storeKey:'capstone-master_v1', tool:'캡스톤디자인 진행판' };
+
+/* ══════════════ 여기부터 화면 ══════════════ */
 
 const $  = s => document.querySelector(s);
-const el = (h) => { const d=document.createElement('div'); d.innerHTML=h.trim(); return d.firstElementChild; };
-const shuffle = a => a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(v=>v[1]);
+const el = h => { const d=document.createElement('div'); d.innerHTML=h.trim(); return d.firstElementChild; };
+const esc = s => String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const today = () => new Date().toISOString().slice(0,10);
 
 const ST = load();
 function load(){
-  try{ return Object.assign({wrong:[],done:{}}, JSON.parse(localStorage.getItem(CFG.storeKey)||'{}')); }
-  catch(e){ return {wrong:[],done:{}}; }
+  const base = { team:{ name:'', topic:'', members:[ {name:'',role:ROLES[0].key,ai:''},
+                                                     {name:'',role:ROLES[1].key,ai:''},
+                                                     {name:'',role:ROLES[2].key,ai:''} ] },
+                 done:{}, logs:[], peers:[], teacher:{}, open:{} };
+  try{ return Object.assign(base, JSON.parse(localStorage.getItem(CFG.storeKey)||'{}')); }
+  catch(e){ return base; }
 }
 function save(){ try{ localStorage.setItem(CFG.storeKey, JSON.stringify(ST)); }catch(e){} }
 
-let quiz = null;          // 지금 풀고 있는 세트
-let lastResult = null;    // 제출용 결과
+/* 산출물 체크 상태 — done['3'] = [true,false] */
+function outState(s){
+  const a = ST.done[s.n] || [];
+  return s.out.map((_,i)=>!!a[i]);
+}
+function outDone(s){ return outState(s).filter(Boolean).length; }
+function allOut(){ return SESSIONS.reduce((n,s)=>n+s.out.length,0); }
+function allDone(){ return SESSIONS.reduce((n,s)=>n+outDone(s),0); }
+function msPct(g){
+  const list = SESSIONS.filter(s=>s.g===g);
+  const t = list.reduce((n,s)=>n+s.out.length,0);
+  const d = list.reduce((n,s)=>n+outDone(s),0);
+  return { d, t, pct: t? Math.round(d/t*100) : 0 };
+}
+
+/* 마일스톤을 방금 다 채웠으면 한 번만 축하 (게임 요소는 최소로) */
+function checkMilestone(g){
+  const m = MS.find(x=>x.g===g); if(!m) return;
+  const p = msPct(g);
+  ST.open = ST.open||{};
+  const key = 'ms_'+g;
+  if(p.pct===100 && !ST.open[key]){
+    ST.open[key]=1; save();
+    try{ if(window.FX) FX.banner({ title:m.name+' 완료!', sub:'산출물 '+p.t+'개를 모두 채웠습니다', stars:3 }); }catch(e){}
+    try{ if(window.RankKit) RankKit.award(100, '캡스톤디자인 — '+m.name+' 산출물'); }catch(e){}
+  }
+  if(p.pct<100 && ST.open[key]){ delete ST.open[key]; save(); }
+}
 
 /* ── 화면 전환 ── */
 document.querySelectorAll('.tab').forEach(t=>{
@@ -138,199 +600,514 @@ document.querySelectorAll('.tab').forEach(t=>{
     document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
     t.classList.add('on');
     render(t.dataset.view);
+    window.scrollTo(0,0);
   };
 });
-
+function go(view){
+  document.querySelector('[data-view="'+view+'"]').click();
+}
 function render(view){
-  const v = $('#view');
-  v.innerHTML = '';
-  if(view==='learn')    return renderLearn(v);
-  if(view==='practice') return startQuiz(v,'practice');
-  if(view==='exam')     return startQuiz(v,'exam');
-  if(view==='wrong')    return renderWrong(v);
+  const v = $('#view'); v.innerHTML='';
+  if(view==='guide') return renderGuide(v);
+  if(view==='board') return renderBoard(v);
+  if(view==='team')  return renderTeam(v);
+  if(view==='ailog') return renderLog(v);
+  if(view==='peer')  return renderPeer(v);
+  if(view==='score') return renderScore(v);
 }
 
-/* ── 배우기 ── */
-function renderLearn(v){
-  LEARN.forEach(c=>{
-    v.appendChild(el(`<div class="card">
-      <span class="pill">${c.unit||''}</span>
-      <h3>${c.t}</h3>
-      <div class="body">${c.body}</div>
-    </div>`));
+/* ── 1) 수업 안내 ── */
+function renderGuide(v){
+  v.appendChild(el('<div class="card"><h3>이 수업은 무엇인가</h3><div class="body">'
+    + '특성화고 3학년 스마트팩토리과 <span class="kw">1학기 전체(약 16주)</span> 프로젝트 수업입니다. '
+    + '2~3인 소팀으로 주제를 정해 직접 만들고, 마지막에 결과물과 <span class="kw">AI 활용 과정</span>을 함께 발표합니다.<br>'
+    + '주요 장비 — 아두이노, 라즈베리파이, 각종 센서, 3D프린터, 공작기계 등 · 연계 수업 — AI 활용 리터러시'
+    + '</div></div>'));
+
+  v.appendChild(el('<div class="card"><h3>수업 목표</h3><ol style="margin:0;padding-left:20px">'
+    + GOALS.map(g=>'<li>'+esc(g)+'</li>').join('') + '</ol></div>'));
+
+  v.appendChild(el('<div class="card"><h3>마일스톤 6단계</h3>'
+    + '<div class="muted" style="margin-bottom:8px">각 마일스톤의 산출물은 AI로 초안을 만든 뒤 <b>팀이 직접 수정·보완</b>합니다.</div>'
+    + '<div class="tblwrap"><table><tr><th style="width:96px">마일스톤</th><th style="width:72px">시기</th>'
+    + '<th>주요 활동</th><th style="width:150px">산출물</th></tr>'
+    + MS.map(m=>'<tr><td><b>'+esc(m.name)+'</b></td><td>'+esc(m.week)+'</td><td>'+esc(m.act)+'</td><td>'
+        + m.out.map(o=>'· '+esc(o)).join('<br>')+'</td></tr>').join('')
+    + '</table></div></div>'));
+
+  v.appendChild(el('<div class="card"><h3>주제는 이렇게 정합니다 (1~3주)</h3>'
+    + EXPLORE.map(e=>'<div class="step"><div class="sh">'+e.n+'. '+esc(e.t)+'</div><ul><li>'+esc(e.c)+'</li></ul></div>').join('')
+    + '<div class="warnbox">AI가 <b>단독으로 주제를 결정하지 않습니다.</b> '
+    + '재료 목록 → AI 질문 → 팀 논의 → 주제 선정, 이 흐름을 반드시 거칩니다.</div></div>'));
+
+  v.appendChild(el('<div class="card"><h3>역할 분담 가이드</h3>'
+    + '<div class="muted" style="margin-bottom:8px">예시이며 팀 상황에 따라 겸임 가능합니다. (2인팀: 기계+문서 / 전자+문서 조합 권장)</div>'
+    + '<div class="tblwrap"><table><tr><th style="width:120px">역할</th><th>주요 담당 업무</th><th>AI 활용 예시</th></tr>'
+    + ROLES.map(r=>'<tr><td><b>'+esc(r.key)+'</b></td><td>'+esc(r.job)+'</td><td class="muted">'+esc(r.ai)+'</td></tr>').join('')
+    + '</table></div></div>'));
+
+  v.appendChild(el('<div class="card"><h3>최종 발표에 반드시 들어가는 것</h3>'
+    + '<div class="muted" style="margin-bottom:8px">팀당 발표 10분 + 질의응답 5분. <span class="star">★</span> 표시는 필수 항목입니다.</div>'
+    + '<div class="tblwrap"><table><tr><th style="width:34px">순서</th><th style="width:150px">슬라이드 주제</th><th>포함 내용</th></tr>'
+    + SLIDES.map(s=>'<tr><td>'+s.n+'</td><td><b>'+(s.must?'<span class="star">★</span> ':'')+esc(s.t)
+        +'</b></td><td>'+esc(s.c)+'</td></tr>').join('')
+    + '</table></div>'
+    + '<div class="warnbox">‘AI 활용 과정’ 슬라이드가 없으면 <b>발표 점수 최대 30% 감점</b>입니다.</div></div>'));
+
+  v.appendChild(el('<div class="card"><h3>지켜야 할 것</h3><ol style="margin:0;padding-left:20px">'
+    + CAUTION.map(c=>'<li style="margin:4px 0">'+esc(c)+'</li>').join('') + '</ol></div>'));
+
+  const b = el('<div class="card row"><b>다 읽었으면</b>'
+    + '<button class="btn btn-primary" id="goBoard">🗓️ 주차 진행판 열기</button>'
+    + '<button class="btn" id="goTeam">🧑‍🤝‍🧑 먼저 팀·역할부터 적기</button></div>');
+  v.appendChild(b);
+  $('#goBoard').onclick = ()=>go('board');
+  $('#goTeam').onclick  = ()=>go('team');
+}
+
+/* ── 2) 주차 진행판 ── */
+function renderBoard(v){
+  const d = allDone(), t = allOut();
+  v.appendChild(el('<div class="card"><h3>전체 진행</h3>'
+    + '<div class="progress"><i style="width:'+(t?d/t*100:0)+'%"></i></div>'
+    + '<div class="muted">산출물 '+t+'개 중 <b>'+d+'개</b> 완료 · 15차시</div></div>'));
+
+  const bar = el('<div class="msbar"></div>');
+  MS.forEach(m=>{
+    const p = msPct(m.g);
+    bar.appendChild(el('<div class="'+(p.pct===100?'full':'')+'"><b>'+esc(m.name)+'</b>'
+      + '<div class="progress" style="margin:5px 0 3px"><i style="width:'+p.pct+'%"></i></div>'
+      + '<div class="pc">'+p.d+' / '+p.t+' 산출물</div></div>'));
   });
-  v.appendChild(el(`<div class="card row">
-    <b>다 읽었으면</b>
-    <button class="btn btn-primary" id="goPractice">✏️ 연습 ${CFG.practiceN}문항 풀어보기</button>
-  </div>`));
-  $('#goPractice').onclick = ()=>document.querySelector('[data-view="practice"]').click();
+  v.appendChild(bar);
+
+  SESSIONS.forEach(s=>v.appendChild(sessCard(s)));
 }
 
-/* ── 문제 풀이 ──
-   연습  : 고르는 즉시 정답·해설 공개, 점수 실시간, 연출 있음
-   종합  : 아무것도 알려주지 않음, 점수 감춤, 연출 없음 (규약 2)  */
-function startQuiz(v, mode){
-  const n = mode==='exam' ? CFG.examN : CFG.practiceN;
-  quiz = { mode, i:0, correct:0, picks:[],
-           list: shuffle(QUESTIONS.slice()).slice(0, Math.min(n, QUESTIONS.length)),
-           startTime: Date.now() };
-  if(!quiz.list.length){ v.appendChild(el('<div class="empty">문항이 아직 없습니다.</div>')); return; }
-  drawQ(v);
-}
+function sessCard(s){
+  const st = outState(s), dn = st.filter(Boolean).length;
+  const opened = !!(ST.open && ST.open['s'+s.n]);
+  const box = el('<div class="sess'+(dn===s.out.length?' done':'')+'"></div>');
 
-function drawQ(v){
-  const q = quiz.list[quiz.i];
-  const isExam = quiz.mode==='exam';
-  v.innerHTML='';
-  v.appendChild(el(`<div class="progress"><i style="width:${quiz.i/quiz.list.length*100}%"></i></div>`));
-  const card = el(`<div class="card">
-      <div class="qnum">${quiz.i+1} / ${quiz.list.length}
-        ${isExam ? '<span class="pill" style="margin-left:6px">채점은 마지막에</span>'
-                 : `<span class="pill" style="margin-left:6px">${quiz.correct}개 맞힘</span>`}</div>
-      <div class="qtext">${q.q}</div>
-      <div id="chs"></div>
-      <div id="exp"></div>
-    </div>`);
-  v.appendChild(card);
-
-  const chs = card.querySelector('#chs');
-  q.ch.forEach((c,idx)=>{
-    const b = el(`<button class="choice">${idx+1}. ${c}</button>`);
-    b.onclick = ()=>pick(v, idx, b);
-    chs.appendChild(b);
-  });
-}
-
-function pick(v, idx, btn){
-  const q = quiz.list[quiz.i];
-  const ok = idx === q.a;
-  quiz.picks.push({q, pick:idx, ok});
-  if(ok) quiz.correct++;
-  else   pushWrong(q, idx);
-
-  if(quiz.mode==='exam'){                 // 종합시험 — 아무 표시 없이 다음으로
-    quiz.i++;
-    if(quiz.i >= quiz.list.length) return finish(v);
-    return drawQ(v);
-  }
-
-  /* 연습 — 정답·해설 즉시 공개 + 연출 */
-  document.querySelectorAll('.choice').forEach((b,i)=>{
-    b.disabled = true;
-    if(i===q.a) b.classList.add('correct');
-    if(i===idx) b.classList.add('picked', ok?'correct':'wrong');
-  });
-  try{ if(window.FX) ok ? FX.ok(btn) : FX.no(btn); }catch(e){ console.warn('FX', e); }
-
-  const exp = document.querySelector('#exp');
-  exp.appendChild(el(`<div class="explain"><b>${ok?'맞았습니다':'정답은 '+(q.a+1)+'번'}</b><br>${q.ex||''}</div>`));
-  const next = el(`<div class="row" style="margin-top:12px">
-      <button class="btn btn-primary">${quiz.i+1>=quiz.list.length?'결과 보기':'다음 문제 →'}</button></div>`);
-  exp.appendChild(next);
-  next.querySelector('button').onclick = ()=>{
-    quiz.i++;
-    if(quiz.i >= quiz.list.length) return finish(v);
-    drawQ(v);
+  const hd = el('<div class="sesshd">'
+    + '<div class="no">'+s.n+'차시</div>'
+    + '<div class="ti"><b>'+esc(s.title)+'</b>'
+      + '<span class="pill wk">'+esc(s.week)+'</span> '
+      + '<span class="pill ms">'+esc(s.ms)+'</span> '
+      + '<span class="pill'+(dn===s.out.length?' dn':'')+'">산출물 '+dn+'/'+s.out.length+'</span></div>'
+    + '<div class="ar">'+(opened?'▲':'▼')+'</div></div>');
+  box.appendChild(hd);
+  hd.onclick = ()=>{
+    ST.open = ST.open||{};
+    if(opened) delete ST.open['s'+s.n]; else ST.open['s'+s.n]=1;
+    save(); render('board');
   };
+  if(!opened) return box;
+
+  const bd = el('<div class="sessbd"></div>');
+  bd.appendChild(el('<div class="okbox"><b>학습목표</b> · '+esc(s.goal)+'</div>'));
+  s.steps.forEach(p=>{
+    bd.appendChild(el('<div class="step"><div class="sh">'+esc(p.k)+' <span class="pill">'+esc(p.m)+'</span></div>'
+      + '<div class="who">교사</div><ul>'+p.t.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>'
+      + '<div class="who">학생 (3인 팀)</div><ul>'+p.s.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div>'));
+  });
+
+  bd.appendChild(el('<h3 style="margin:16px 0 8px;font-size:15px">이 차시의 산출물</h3>'));
+  s.out.forEach((o,i)=>{
+    const lab = el('<label class="out'+(st[i]?' on':'')+'"><input type="checkbox"'+(st[i]?' checked':'')
+      + '><span class="t">'+esc(o)+'</span></label>');
+    lab.querySelector('input').onchange = (e)=>{
+      const a = ST.done[s.n] || s.out.map(()=>false);
+      a[i] = e.target.checked; ST.done[s.n] = a; save();
+      checkMilestone(s.g);
+      render('board');
+    };
+    bd.appendChild(lab);
+  });
+
+  bd.appendChild(el('<div id="sub'+s.n+'" style="margin-top:6px"></div>'));
+  box.appendChild(bd);
+  setTimeout(()=>whenRC(()=>mountSessSubmit(s)), 0);
+  return box;
 }
 
-function pushWrong(q, pick){
-  ST.wrong = ST.wrong.filter(w => w.q !== q.q);
-  ST.wrong.unshift({ unit:q.unit||'', q:q.q, ch:q.ch, a:q.a, pick, ex:q.ex||'', at:Date.now() });
-  ST.wrong = ST.wrong.slice(0, 100);
-  save();
+function mountSessSubmit(s){
+  const anchor = document.getElementById('sub'+s.n);
+  if(!anchor || !(window.ResultCollector && ResultCollector.attach)) return;
+  const btn = ResultCollector.attach(anchor, ()=>{
+    const st = outState(s), dn = st.filter(Boolean).length;
+    const miss = s.out.filter((o,i)=>!st[i]);
+    return {
+      mode : '캡스톤디자인 — '+s.n+'차시 '+s.title,
+      score: Math.round(dn/s.out.length*100),
+      correct: dn, total: s.out.length,
+      wrong: miss.length ? miss.map(o=>'미완료: '+o) : ['빠진 산출물 없음 · 팀 '+(ST.team.name||'(팀명 없음)')],
+      durationSec: 0,
+      labels: LABELS,
+    };
+  }, { id:'rcBtn'+s.n, className:'btn btn-primary', mode:'캡스톤디자인 — '+s.n+'차시 '+s.title,
+       extra:[s.ms+' 산출물 제출'] });
+  if(btn){ btn.style.width='100%'; btn.textContent = '📤 ['+s.n+'차시] 산출물 제출'; }
 }
 
-/* ── 끝난 뒤 ── */
-function finish(v){
-  const n   = quiz.list.length;
-  const pct = Math.round(quiz.correct / n * 100);
-  const sec = Math.round((Date.now() - quiz.startTime)/1000);
-  const part = quiz.mode==='exam' ? '종합시험' : '연습';
+/* 시트 열 이름 — 문제풀이 도구가 아니라 기록 도구라서 용어를 바꾼다.
+   (Code.gs 가 탭을 처음 만들 때 이 이름으로 열을 만든다) */
+const LABELS = { score:'충실도(%)', correct:'작성한 항목', total:'필요 항목',
+                 rate:'작성률(%)', wrong:'기록 요약 · 빠진 항목' };
 
-  v.innerHTML = '';
-  v.appendChild(el(`<div class="card" style="text-align:center">
-      <div class="score">${pct}점</div>
-      <div class="muted">${n}문항 중 ${quiz.correct}개 정답 · ${Math.floor(sec/60)}분 ${sec%60}초</div>
-      <div id="rankBox" style="margin-top:12px"></div>
-      <div id="rSubmitAnchor" style="margin-top:12px"></div>
-    </div>`));
+/* ── 3) 팀 · 역할 ── */
+function renderTeam(v){
+  v.appendChild(el('<div class="card"><h3>팀 구성표 · 역할 분담표</h3>'
+    + '<div class="muted">1차시 안에 끝냅니다. <b>역할 분담표를 제출하지 않으면 팀 활동이 인정되지 않습니다.</b> '
+    + '역할은 겸임할 수 있지만 책임은 분명히 적습니다.</div></div>'));
 
-  /* 오답노트 — 종합시험은 여기서 처음으로 정답을 본다 */
-  const bad = quiz.picks.filter(p=>!p.ok);
-  if(bad.length){
-    v.appendChild(el('<div class="card"><h3>📕 틀린 문제</h3></div>'));
-    bad.forEach(p=>{
-      v.appendChild(el(`<div class="card">
-        <span class="pill">${p.q.unit||''}</span>
-        <div class="qtext">${p.q.q}</div>
-        <div class="muted">내가 고른 답 : ${p.pick+1}. ${p.q.ch[p.pick]}</div>
-        <div style="color:var(--ok);font-weight:700">정답 : ${p.q.a+1}. ${p.q.ch[p.q.a]}</div>
-        <div class="explain">${p.q.ex||''}</div>
-      </div>`));
+  const c = el('<div class="card"></div>');
+  c.appendChild(fld('팀명', 'text', ST.team.name, v2=>{ ST.team.name=v2; save(); paintTeamRate(); }));
+  c.appendChild(fld('프로젝트 주제 (정해졌으면)', 'text', ST.team.topic, v2=>{ ST.team.topic=v2; save(); paintTeamRate(); }));
+  v.appendChild(c);
+
+  ST.team.members.forEach((m,i)=>{
+    const box = el('<div class="card"><h3>팀원 '+(i+1)+'</h3></div>');
+    box.appendChild(fld('이름','text', m.name, v2=>{ m.name=v2; save(); paintTeamRate(); }));
+
+    const sel = el('<label class="fld"><span>역할</span><select>'
+      + ROLES.map(r=>'<option'+(m.role===r.key?' selected':'')+'>'+esc(r.key)+'</option>').join('')
+      + '</select></label>');
+    sel.querySelector('select').onchange = e=>{ m.role=e.target.value; save(); render('team'); };
+    box.appendChild(sel);
+
+    const r = ROLES.find(x=>x.key===m.role) || ROLES[0];
+    box.appendChild(el('<div class="muted" style="margin-top:5px">담당 업무 — '+esc(r.job)
+      + '<br>AI 활용 예시 — '+esc(r.ai)+'</div>'));
+
+    box.appendChild(fld('내가 AI를 어떻게 쓸지 (1줄)','text', m.ai, v2=>{ m.ai=v2; save(); paintTeamRate(); }));
+    v.appendChild(box);
+  });
+
+  v.appendChild(el('<div class="card"><h3>작성 상태</h3>'
+    + '<div class="progress"><i id="tmBar" style="width:0"></i></div>'
+    + '<div class="muted" id="tmTx"></div>'
+    + '<div class="row" style="margin-top:10px">'
+      + '<button class="btn" onclick="window.print()">🖨 역할 분담표 인쇄</button></div>'
+    + '<div id="tmSub"></div></div>'));
+
+  paintTeamRate();
+  whenRC(mountTeamSubmit);
+}
+function fld(label, type, val, on){
+  const w = el('<label class="fld"><span>'+esc(label)+'</span><input type="'+type+'" value="'+esc(val||'')+'"></label>');
+  w.querySelector('input').oninput = e=>on(e.target.value);   /* 입력 중에는 trim 하지 않는다 (공백을 못 치게 됨) */
+  return w;
+}
+
+/* collector.js 는 </body> 앞에서 늦게 실행된다 — 아직이면 잠깐 뒤에 다시 시도한다 */
+function whenRC(fn, tries){
+  if(window.ResultCollector && ResultCollector.attach) return fn();
+  if((tries||0) > 40) return;
+  setTimeout(()=>whenRC(fn,(tries||0)+1), 120);
+}
+function teamRate(){
+  let need = 2, ok = 0;                       // 팀명 · 주제
+  const f = x => !!(x||'').trim();
+  if(f(ST.team.name)) ok++;
+  if(f(ST.team.topic)) ok++;
+  ST.team.members.forEach(m=>{ need += 2; if(f(m.name)) ok++; if(f(m.ai)) ok++; });
+  return { ok, need, pct: Math.round(ok/need*100) };
+}
+function paintTeamRate(){
+  const r = teamRate();
+  const bar = document.getElementById('tmBar'), tx = document.getElementById('tmTx');
+  if(bar) bar.style.width = r.pct+'%';
+  if(tx)  tx.textContent = '칸 '+r.need+'개 중 '+r.ok+'개 작성';
+}
+function mountTeamSubmit(){
+  const anchor = document.getElementById('tmSub');
+  if(!anchor || !(window.ResultCollector && ResultCollector.attach)) return;
+  const btn = ResultCollector.attach(anchor, ()=>{
+    const r = teamRate();
+    const f = x => (x||'').trim();
+    const miss = [];
+    if(!f(ST.team.name)) miss.push('팀명');
+    if(!f(ST.team.topic)) miss.push('프로젝트 주제');
+    ST.team.members.forEach((m,i)=>{
+      if(!f(m.name)) miss.push('팀원'+(i+1)+' 이름');
+      if(!f(m.ai))   miss.push('팀원'+(i+1)+' AI 활용 계획');
     });
-  }
-
-  /* 제출을 먼저 붙입니다 — 연출·계급에서 오류가 나도 제출 버튼은 살아 있어야 합니다.
-     (실제로 소리 재생이 막힌 환경에서 FX 가 던진 오류에 제출 버튼이 통째로 사라진 적이 있습니다) */
-  mountSubmit(pct, quiz.correct, n, sec, part, bad);
-
-  try{
-    if(window.FX && pct>=60){
-      FX.banner({ title: pct>=90?'훌륭합니다!':'통과!', sub:`${part} ${pct}점`,
-                  stars: FX.starsFor ? FX.starsFor(pct) : 0 });
-    }
-  }catch(e){ console.warn('FX', e); }
-  try{
-    if(window.Rank){
-      const res = Rank.award(pct, { mode:`캡스톤디자인 진행판 — ${part}` });   // RP 정산
-      $('#rankBox').innerHTML = Rank.resultBox(res);                     // 문자열 HTML 을 돌려줍니다
-    }
-  }catch(e){ console.warn('Rank', e); }
+    const sum = '팀 '+(f(ST.team.name)||'(팀명 없음)')+' · 주제 '+(f(ST.team.topic)||'(미정)')+' / '
+      + ST.team.members.filter(m=>f(m.name)).map(m=>f(m.name)+'('+m.role+')').join(', ');
+    return {
+      mode:'캡스톤디자인 — 팀 구성·역할 분담표',
+      score:r.pct, correct:r.ok, total:r.need,
+      wrong: [sum].concat(miss.map(x=>'빈 칸: '+x)),
+      durationSec:0, labels:LABELS,
+    };
+  }, { id:'rcBtnTeam', className:'btn btn-primary', mode:'캡스톤디자인 — 팀 구성·역할 분담표',
+       extra:['역할 분담과 협업 계획 수립'] });
+  if(btn){ btn.style.width='100%'; btn.textContent='📤 [역할 분담표] 제출'; }
 }
 
-/* ── 결과 제출 (규약 1) ──
-   mode 는 파트마다 다르게, wrong 은 번호가 아니라 "무엇을 틀렸는지" */
-function mountSubmit(pct, correct, total, sec, part, bad){
-  lastResult = {
-    mode   : `캡스톤디자인 진행판 — ${part}`,
-    score  : pct, correct, total,
-    wrong  : bad.map(p => `${p.q.unit||''} ${p.q.q.slice(0,24)}… → 정답 ${p.q.a+1}번`),
-    durationSec : sec,
+/* ── 4) AI 활용 로그 ── */
+function logRate(){
+  const need = Math.max(ST.logs.length, LOG_TARGET) * LOGF.length;
+  let ok = 0;
+  ST.logs.forEach(g=>LOGF.forEach(f=>{ if((g[f.k]||'').trim()) ok++; }));
+  return { ok, need, pct: Math.round(ok/need*100) };
+}
+function renderLog(v){
+  const r = logRate();
+  v.appendChild(el('<div class="card"><h3>AI 활용 로그 (누적)</h3>'
+    + '<div class="muted">문제를 만날 때마다 한 건씩 씁니다. 12차시 ‘AI 활용 과정’ 슬라이드와 '
+    + '15차시 포트폴리오가 <b>이 기록에서 나옵니다.</b> 목표 '+LOG_TARGET+'건 · 한 건에 5칸.</div>'
+    + '<div class="progress" style="margin-top:9px"><i style="width:'+r.pct+'%"></i></div>'
+    + '<div class="muted">'+ST.logs.length+'건 작성 · 칸 '+r.need+'개 중 '+r.ok+'개 채움</div>'
+    + '<div class="row" style="margin-top:10px">'
+      + '<button class="btn btn-primary" id="addLog">＋ 로그 한 건 추가</button>'
+      + '<button class="btn" onclick="window.print()">🖨 포트폴리오 인쇄</button></div>'
+    + '<div id="lgSub"></div></div>'));
+
+  $('#addLog').onclick = ()=>{
+    ST.logs.unshift({ date:today(), sess:'', problem:'', prompt:'', answer:'', bad:'', fix:'' });
+    save(); render('ailog');
   };
-  const anchor = $('#rSubmitAnchor');
-  if(!(window.ResultCollector && ResultCollector.attach) || !anchor) return;
-  const btn = ResultCollector.attach(anchor, ()=>lastResult, {
-    id:'rcBtn', className:'btn btn-primary',
-    mode: lastResult.mode,
-    extra: [`캡스톤디자인 진행판 ${part} ${pct}점`],
-  });
-  if(btn){ btn.style.width='100%'; btn.textContent = `📤 [${part}] 결과 제출`; }
-}
 
-/* ── 오답노트 (쌓인 것) ── */
-function renderWrong(v){
-  if(!ST.wrong.length){
-    v.appendChild(el('<div class="empty">🗒️ 아직 오답이 없어요!<br>연습이나 종합시험을 풀면 여기에 모입니다.</div>'));
-    return;
+  if(!ST.logs.length){
+    v.appendChild(el('<div class="empty">🤖 아직 로그가 없습니다.<br>'
+      + '‘＋ 로그 한 건 추가’ 를 눌러 오늘 AI와 해결한 문제를 적어 두세요.</div>'));
   }
-  v.appendChild(el(`<div class="card row">
-      <b>${ST.wrong.length}문항</b>
-      <button class="btn" id="clrWrong">비우기</button></div>`));
-  $('#clrWrong').onclick = ()=>{ ST.wrong=[]; save(); render('wrong'); };
-  ST.wrong.forEach(w=>{
-    v.appendChild(el(`<div class="card">
-      <span class="pill">${w.unit}</span>
-      <div class="qtext">${w.q}</div>
-      <div class="muted">내가 고른 답 : ${w.pick+1}. ${w.ch[w.pick]}</div>
-      <div style="color:var(--ok);font-weight:700">정답 : ${w.a+1}. ${w.ch[w.a]}</div>
-      <div class="explain">${w.ex}</div>
-    </div>`));
+
+  ST.logs.forEach((g,idx)=>{
+    const box = el('<div class="logitem"><div class="hd">'
+      + '<span class="pill">'+esc(g.date||'')+'</span>'
+      + '<button class="btn btn-sm" data-del="'+idx+'">삭제</button></div></div>');
+    box.querySelector('[data-del]').onclick = ()=>{
+      if(!confirm('이 로그를 지울까요?')) return;
+      ST.logs.splice(idx,1); save(); render('ailog');
+    };
+    const sel = el('<label class="fld"><span>차시</span><select><option value="">— 고르기 —</option>'
+      + SESSIONS.map(s=>'<option value="'+s.n+'"'+(String(g.sess)===String(s.n)?' selected':'')+'>'
+          + s.n+'차시 · '+esc(s.title)+'</option>').join('') + '</select></label>');
+    sel.querySelector('select').onchange = e=>{ g.sess=e.target.value; save(); };
+    box.appendChild(sel);
+
+    LOGF.forEach(f=>{
+      const w = el('<label class="fld"><span>'+esc(f.t)+'</span><textarea placeholder="'+esc(f.ph)+'">'
+        + esc(g[f.k]||'') + '</textarea></label>');
+      w.querySelector('textarea').oninput = e=>{ g[f.k]=e.target.value; save(); };
+      box.appendChild(w);
+    });
+    v.appendChild(box);
   });
+
+  whenRC(mountLogSubmit);
+}
+function mountLogSubmit(){
+  const anchor = document.getElementById('lgSub');
+  if(!anchor || !(window.ResultCollector && ResultCollector.attach)) return;
+  const btn = ResultCollector.attach(anchor, ()=>{
+    const r = logRate();
+    const topics = ST.logs.slice(0,5).map((g,i)=>(i+1)+'. '+(g.problem||'(문제 미기재)').slice(0,30));
+    const miss = [];
+    if(ST.logs.length < LOG_TARGET) miss.push('로그 '+(LOG_TARGET-ST.logs.length)+'건 더 필요');
+    ST.logs.forEach((g,i)=>{
+      const empty = LOGF.filter(f=>!(g[f.k]||'').trim()).map(f=>f.t.slice(0,1));
+      if(empty.length) miss.push((i+1)+'번 빈 칸 '+empty.join('·'));
+    });
+    return {
+      mode:'캡스톤디자인 — AI 활용 로그',
+      score:r.pct, correct:r.ok, total:r.need,
+      wrong: topics.concat(miss),
+      durationSec:0, labels:LABELS,
+    };
+  }, { id:'rcBtnLog', className:'btn btn-primary', mode:'캡스톤디자인 — AI 활용 로그',
+       extra:['AI 활용 과정 기록'] });
+  if(btn){ btn.style.width='100%'; btn.textContent='📤 [AI 활용 로그] 제출'; }
 }
 
-$('#hdSub').textContent = `문항 ${QUESTIONS.length} · 개념 ${LEARN.length}`;
-render('learn');
+/* ── 5) 발표 상호평가 ── */
+let peerCur = null;
+function renderPeer(v){
+  if(!peerCur) peerCur = { team:'', sc:{}, good:'', adv:'' };
+  v.appendChild(el('<div class="card"><h3>발표 상호평가 (동료 평가표)</h3>'
+    + '<div class="muted">14·15차시에 <b>다른 팀 발표를 보면서</b> 씁니다. 한 팀을 다 적고 제출한 뒤, '
+    + '다음 팀은 새로 적습니다. 점수만 매기지 말고 좋은 점과 제안을 반드시 한 줄씩 남깁니다.</div></div>'));
+
+  const c = el('<div class="card"></div>');
+  c.appendChild(fld('발표한 팀 이름','text', peerCur.team, v2=>{ peerCur.team=v2; paintPeer(); }));
+  v.appendChild(c);
+
+  PEER.forEach(p=>{
+    const box = el('<div class="card"><h3 style="font-size:15px">'+esc(p.t)+'</h3>'
+      + '<div class="muted">'+esc(p.h)+'</div></div>');
+    const rt = el('<div class="rate"></div>');
+    PEER_LV.forEach((lv,i)=>{
+      const b = el('<button'+(peerCur.sc[p.id]===i+1?' class="on"':'')+'>'+lv+'</button>');
+      b.onclick = ()=>{ peerCur.sc[p.id]=i+1; render('peer'); };
+      rt.appendChild(b);
+    });
+    box.appendChild(rt);
+    v.appendChild(box);
+  });
+
+  const t = el('<div class="card"></div>');
+  const g1 = el('<label class="fld"><span>좋았던 점 (한 가지)</span><textarea>'+esc(peerCur.good)+'</textarea></label>');
+  g1.querySelector('textarea').oninput = e=>{ peerCur.good=e.target.value; paintPeer(); };
+  const g2 = el('<label class="fld"><span>질문 또는 조언 (한 가지)</span><textarea>'+esc(peerCur.adv)+'</textarea></label>');
+  g2.querySelector('textarea').oninput = e=>{ peerCur.adv=e.target.value; paintPeer(); };
+  t.appendChild(g1); t.appendChild(g2);
+  v.appendChild(t);
+
+  const sbox = el('<div class="card"><h3>작성 상태</h3>'
+    + '<div class="progress"><i id="prBar" style="width:0"></i></div>'
+    + '<div class="muted" id="prTx"></div><div id="prSub"></div>'
+    + '<div class="row" style="margin-top:10px">'
+      + '<button class="btn" id="peerNext">✔ 이 팀 평가 끝 — 다음 팀 적기</button></div></div>');
+  v.appendChild(sbox);
+  sbox.querySelector('#peerNext').onclick = ()=>{
+    const nm = (peerCur.team||'').trim();
+    if(!nm){ alert('발표한 팀 이름을 먼저 적어 주세요.'); return; }
+    if(!confirm('‘'+nm+'’ 평가를 마치고 화면을 비울까요? (제출은 위 버튼으로 따로 해야 선생님께 갑니다)')) return;
+    ST.peers.unshift({ date:today(), team:nm });
+    ST.peers = ST.peers.slice(0,20); save();
+    peerCur = { team:'', sc:{}, good:'', adv:'' };
+    render('peer');
+  };
+
+  if(ST.peers.length){
+    v.appendChild(el('<div class="card"><h3>이 기기에서 적은 팀</h3>'
+      + ST.peers.map(p=>'<div class="muted">· '+esc(p.date)+' — '+esc(p.team)+'</div>').join('')+'</div>'));
+  }
+
+  paintPeer();
+  whenRC(mountPeerSubmit);
+}
+function peerRate(){
+  const need = 1 + PEER.length + 2;
+  let ok = 0;
+  if((peerCur.team||'').trim()) ok++;
+  PEER.forEach(p=>{ if(peerCur.sc[p.id]) ok++; });
+  if((peerCur.good||'').trim()) ok++;
+  if((peerCur.adv||'').trim()) ok++;
+  return { ok, need, pct: Math.round(ok/need*100) };
+}
+function paintPeer(){
+  const r = peerRate();
+  const bar = document.getElementById('prBar'), tx = document.getElementById('prTx');
+  if(bar) bar.style.width = r.pct+'%';
+  if(tx)  tx.textContent = '칸 '+r.need+'개 중 '+r.ok+'개 작성 — 다 채워야 제출이 의미 있습니다';
+}
+function mountPeerSubmit(){
+  const anchor = document.getElementById('prSub');
+  if(!anchor || !(window.ResultCollector && ResultCollector.attach)) return;
+  const btn = ResultCollector.attach(anchor, ()=>{
+    const r = peerRate();
+    const detail = PEER.map((p,i)=>(i+1)+'. '+p.t.slice(0,12)+' '
+      + (peerCur.sc[p.id] ? PEER_LV[peerCur.sc[p.id]-1] : '미평가'));
+    const lines = ['평가한 팀: '+(peerCur.team||'(미기재)')]
+      .concat(detail)
+      .concat(['좋았던 점: '+(peerCur.good||'(미기재)'), '질문·조언: '+(peerCur.adv||'(미기재)')]);
+    return {
+      mode:'캡스톤디자인 — 발표 상호평가',
+      score:r.pct, correct:r.ok, total:r.need,
+      wrong: lines, durationSec:0, labels:LABELS,
+    };
+  }, { id:'rcBtnPeer', className:'btn btn-primary', mode:'캡스톤디자인 — 발표 상호평가',
+       extra:['동료 발표 상호평가 참여'] });
+  if(btn){ btn.style.width='100%'; btn.textContent='📤 [상호평가] 이 팀 평가 제출'; }
+}
+
+/* ── 6) 평가 기준 (배점표 + 교사 채점) ── */
+function renderScore(v){
+  v.appendChild(el('<div class="card"><h3>평가 기준 — 합계 100점</h3>'
+    + '<div class="muted" style="margin-bottom:8px">지도안 Ⅶ 그대로입니다. 학생도 처음부터 볼 수 있어야 하는 표입니다.</div>'
+    + '<div class="tblwrap"><table><tr><th style="width:150px">평가 영역</th><th style="width:52px">배점</th>'
+    + '<th>평가 기준</th><th style="width:120px">평가 방법</th></tr>'
+    + SCORE.map(s=>'<tr><td><b>'+esc(s.area)+'</b></td><td>'+s.pt+'점</td><td>'+esc(s.std)+'</td>'
+        + '<td class="muted">'+esc(s.how)+'</td></tr>').join('')
+    + '<tr><td><b>합계</b></td><td><b>100점</b></td><td colspan="2" class="muted">'
+    + '결과보다 <b>과정 중심</b> 평가 — 완성도가 낮아도 과정 기록이 충실하면 부분 점수를 인정합니다.'
+    + '</td></tr></table></div></div>'));
+
+  const c = el('<div class="card"><h3>채점표 (교사용)</h3>'
+    + '<div class="muted">이 기기에만 저장됩니다. 인쇄해서 쓰거나 화면 그대로 보여 줘도 됩니다.</div></div>');
+  SCORE.forEach((s,i)=>{
+    const w = el('<label class="fld"><span>'+esc(s.area)+' (0~'+s.pt+'점)</span>'
+      + '<input type="number" min="0" max="'+s.pt+'" value="'+(ST.teacher['t'+i]==null?'':ST.teacher['t'+i])+'"></label>');
+    w.querySelector('input').oninput = e=>{
+      let n = parseInt(e.target.value,10);
+      if(isNaN(n)) { delete ST.teacher['t'+i]; }
+      else {
+        n = Math.max(0, Math.min(s.pt, n));
+        ST.teacher['t'+i] = n;
+        if(String(n) !== e.target.value) e.target.value = n;   /* 배점을 넘겨 적으면 화면도 함께 되돌린다 */
+      }
+      save(); paintTotal();
+    };
+    c.appendChild(w);
+  });
+  c.appendChild(el('<div class="okbox" style="margin-top:12px"><b>합계</b> <span class="score" id="tot">0</span> / 100점</div>'));
+  c.appendChild(el('<div class="row"><button class="btn" onclick="window.print()">🖨 채점표 인쇄</button></div>'));
+  v.appendChild(c);
+
+  v.appendChild(el('<div class="card"><h3>세부능력 및 특기사항은 무엇으로 쓰나</h3>'
+    + '<div class="body">이 도구가 제출한 기록은 <span class="kw">rubric.json</span> 의 평가요소로 수준(상·중·하)을 판정해 '
+    + '선생님 시트에 문장 초안까지 함께 남깁니다. 왼쪽 아래 <b>📋 평가 기준</b> 버튼을 누르면 '
+    + '무엇을 어떤 기준으로 보는지 학생도 그대로 볼 수 있습니다.</div>'
+    + '<div class="muted" style="margin-top:8px">문장 초안은 어디까지나 초안입니다. '
+    + '실제 기재는 수업에서 관찰한 사실로 교사가 확인해 씁니다.</div></div>'));
+
+  paintTotal();
+}
+function paintTotal(){
+  const t = SCORE.reduce((n,s,i)=>n + (ST.teacher['t'+i]||0), 0);
+  const e = document.getElementById('tot');
+  if(e) e.textContent = t;
+}
+
+/* ── 계급 배지 (오른쪽 아래, 수업모드·소리 위로 쌓임) ── */
+function stackBadge(el2){
+  function place(){
+    var up = 10;
+    ['.cm-launch','#fxSnd'].forEach(function(s){
+      var o = document.querySelector(s); if(!o) return;
+      var r = o.getBoundingClientRect();
+      if(r.height) up = Math.max(up, Math.round(window.innerHeight - r.top) + 6);
+    });
+    el2.style.bottom = up + 'px';
+  }
+  place(); setTimeout(place,0);
+  window.addEventListener('load', place);
+  window.addEventListener('resize', place);
+}
+function paintBadge(){
+  if(!window.Rank || !document.body) return;
+  var e = document.getElementById('rk-badge');
+  if(!e){
+    e = document.createElement('div'); e.id='rk-badge';
+    e.style.cssText = 'position:fixed;right:10px;bottom:10px;z-index:9998;'
+      + 'font-size:11.5px;opacity:.9;pointer-events:none';
+    document.body.appendChild(e);
+    stackBadge(e);
+  }
+  try{ e.innerHTML = Rank.badge(); }catch(err){}
+}
+window.RankKit = {
+  award: function(pct, mode){
+    if(!window.Rank) return null;
+    var rk = null;
+    try{ rk = Rank.award(pct, { mode: mode || '캡스톤디자인' }); }catch(e){}
+    paintBadge();
+    if(rk && rk.tierUp && window.FX){
+      try{ FX.banner({ icon:rk.tierAfter.icon, title:rk.tierAfter.name+' 승급!',
+                       sub:rk.after+' RP · '+rk.tierAfter.full, stars:3 }); }catch(e){}
+    }
+    return rk;
+  }
+};
+
+$('#hdSub').textContent = '스마트팩토리과 3학년 · 50분 × 15차시 · 3인 팀';
+render('guide');
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', paintBadge);
+else setTimeout(paintBadge, 300);
 </script>
 
 <!-- 공용 위젯 — 순서 그대로 두세요 (규약 1 · 3 · 3-1) -->
