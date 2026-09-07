@@ -103,7 +103,7 @@
   .rate button.on{background:var(--pri);border-color:var(--pri);color:#fff}
 
   @media print{
-    .tabs,.btn,#rb-btn,.cm-launch,#fxSnd,#bb-btn,.tr-btn,#rk-badge,.noprint{display:none!important}
+    .tabs,.btn,#rb-btn,#fxSnd,#bb-btn,.tr-btn,#rk-badge,.noprint{display:none!important}
     body{background:#fff}
     .wrap{max-width:none;padding:0}
     .card,.sess,.logitem{break-inside:avoid;border-color:#999}
@@ -128,6 +128,12 @@
   </div>
 
   <div id="view"></div>
+
+  <div style="text-align:center;margin-top:12px">
+    <button type="button" id="openBoard" class="noprint"
+      style="background:none;border:none;color:var(--dim);font-size:13px;cursor:pointer;padding:6px;font-family:inherit">
+      📽️ 수업 슬라이드 열기 (선생님용) →</button>
+  </div>
 </div>
 
 <script>
@@ -1063,11 +1069,11 @@ function paintTotal(){
   if(e) e.textContent = t;
 }
 
-/* ── 계급 배지 (오른쪽 아래, 수업모드·소리 위로 쌓임) ── */
+/* ── 계급 배지 (오른쪽 아래, 소리 단추 위로 쌓임) ── */
 function stackBadge(el2){
   function place(){
     var up = 10;
-    ['.cm-launch','#fxSnd'].forEach(function(s){
+    ['#fxSnd'].forEach(function(s){
       var o = document.querySelector(s); if(!o) return;
       var r = o.getBoundingClientRect();
       if(r.height) up = Math.max(up, Math.round(window.innerHeight - r.top) + 6);
@@ -1114,8 +1120,44 @@ else setTimeout(paintBadge, 300);
 <script src="https://hongyul67-cpu.github.io/links/collector.js"  data-tool="캡스톤디자인 진행판"></script>
 <script src="https://hongyul67-cpu.github.io/links/fx.js"></script>
 <script src="https://hongyul67-cpu.github.io/links/rank.js"       data-tool="캡스톤디자인" data-pace="class"></script>
-<script src="https://hongyul67-cpu.github.io/links/class-mode.js"></script>
 <script src="https://hongyul67-cpu.github.io/links/reset.js"></script>
 <script src="https://hongyul67-cpu.github.io/links/backbar.js"></script>
+
+<!-- 수업 슬라이드 — 원고(lesson.js) 는 이 저장소 것, 화면(board-pro.js) 은 links 의 공용 파일이다.
+     저장소에 사본을 두지 않는다. 화면을 고쳐야 하면 links 저장소에서 고친다. -->
+<script src="lesson.js"></script>
+<script src="https://hongyul67-cpu.github.io/links/board-pro.js"></script>
+<script>
+/* 선생님용 입구 — 학생용 진행판은 그대로 두고, 지도안 내용을 교실 화면용 슬라이드로 연다. */
+(function(){
+  var b = document.getElementById('openBoard');
+  if(!b) return;
+  b.onclick = function(){
+    if(!window.BoardPro || !(window.LESSON||[]).length){
+      alert('수업자료를 불러오지 못했습니다. 잠시 뒤 새로고침해 주세요.'); return;
+    }
+    var ALL = window.LESSON, LF = window.LESSFIG || {}, units = [];
+    ALL.forEach(function(s){ if(units.indexOf(s.u)<0) units.push(s.u); });
+    var menu = units.map(function(u){
+      var list = ALL.filter(function(s){ return s.u===u; });
+      return { icon:'📘', title:u, desc:'슬라이드 '+list.length+'장 · '+list[0].t,
+               run:{ kind:'lesson', deck:list } };
+    });
+    menu.push({ icon:'📚', wide:true, title:'전체 이어서 ('+ALL.length+'장)',
+                desc:'수업의 짜임부터 평가 기준까지 순서대로 진행합니다.',
+                run:{ kind:'lesson', deck:ALL } });
+    menu.push({ icon:'⬜', wide:true, title:'빈 칠판',
+                desc:'슬라이드 없이 판서만. 팀별 계획을 함께 그려 볼 때.',
+                run:{ kind:'blank' } });
+    BoardPro.open({
+      title:'📽️ 캡스톤 디자인 · 수업 슬라이드',
+      sub:'요점 → <b>발문</b> → 퀴즈 → 정답을 하나씩 엽니다. 화면 어디든 바로 판서됩니다.<br>'+
+          '요점 속 <b>파란 빈칸</b>은 눌러야 답이 보입니다.',
+      menu: menu,
+      fig: function(s){ return (s.fig && LF[s.fig]) ? LF[s.fig]() : ''; }
+    });
+  };
+})();
+</script>
 </body>
 </html>
