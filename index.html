@@ -102,6 +102,12 @@
         padding:7px 4px;font-size:13px;font-weight:700;cursor:pointer;color:var(--dim)}
   .rate button.on{background:var(--pri);border-color:var(--pri);color:#fff}
 
+  /* 그림 (links/fig.js · figs.js) */
+  .figbox{margin:6px 0 12px}
+  /* 넓은 화면에서 칸이 잘게 쪼개져 그림 한 장이 300px 로 줄지 않게 — 칸은 최대 560px 까지 자란다 */
+  .figbox .fig-gallery{grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),560px))}
+  .sessbd .figbox{margin:12px 0 4px}
+
   @media print{
     .tabs,.btn,#rb-btn,#fxSnd,#bb-btn,.tr-btn,#rk-badge,.noprint{display:none!important}
     body{background:#fff}
@@ -109,6 +115,10 @@
     .card,.sess,.logitem{break-inside:avoid;border-color:#999}
   }
 </style>
+<!-- 그림 — 그리는 도구(fig.js)는 links 의 공용 파일, 그림 모음(figs.js)은 이 저장소 것.
+     첫 화면(수업 안내)이 아래 본문 스크립트에서 바로 그려지므로 head 에서 먼저 부른다. lesson.js 도 이것을 쓴다. -->
+<script src="https://hongyul67-cpu.github.io/links/fig.js"></script>
+<script src="figs.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -614,12 +624,22 @@ function go(view){
 }
 function render(view){
   const v = $('#view'); v.innerHTML='';
-  if(view==='guide') return renderGuide(v);
-  if(view==='board') return renderBoard(v);
-  if(view==='team')  return renderTeam(v);
-  if(view==='ailog') return renderLog(v);
-  if(view==='peer')  return renderPeer(v);
-  if(view==='score') return renderScore(v);
+  if(view==='guide') renderGuide(v);
+  if(view==='board') renderBoard(v);
+  if(view==='team')  renderTeam(v);
+  if(view==='ailog') renderLog(v);
+  if(view==='peer')  renderPeer(v);
+  if(view==='score') renderScore(v);
+  const fh = figHtml('탭:'+view);
+  if(fh) v.insertBefore(el('<div class="card"><h3>🖼️ 그림으로 먼저 보기</h3>'+fh+'</div>'), v.firstChild);
+}
+
+/* ── 그림 — 어느 그림을 어디에 붙일지는 figs.js 의 cards 가 정한다
+       수업 안내 = 카드 제목(h3) 그대로 · 주차 진행판 = '3차시' · 다른 탭 = '탭:ailog' ── */
+function figHtml(name){
+  if(!window.FIG || !window.FIGS) return '';
+  const ks = Object.keys(FIGS).filter(k=>(FIGS[k].cards||[]).indexOf(name)>=0);
+  return ks.length ? '<div class="figbox">'+FIG.gallery(ks)+'</div>' : '';
 }
 
 /* ── 1) 수업 안내 ── */
@@ -662,6 +682,11 @@ function renderGuide(v){
 
   v.appendChild(el('<div class="card"><h3>지켜야 할 것</h3><ol style="margin:0;padding-left:20px">'
     + CAUTION.map(c=>'<li style="margin:4px 0">'+esc(c)+'</li>').join('') + '</ol></div>'));
+
+  v.querySelectorAll('.card > h3').forEach(h=>{
+    const fh = figHtml(h.textContent);
+    if(fh) h.insertAdjacentElement('afterend', el(fh));
+  });
 
   const b = el('<div class="card row"><b>다 읽었으면</b>'
     + '<button class="btn btn-primary" id="goBoard">🗓️ 주차 진행판 열기</button>'
@@ -712,6 +737,8 @@ function sessCard(s){
 
   const bd = el('<div class="sessbd"></div>');
   bd.appendChild(el('<div class="okbox"><b>학습목표</b> · '+esc(s.goal)+'</div>'));
+  const fh = figHtml(s.n+'차시');
+  if(fh) bd.appendChild(el(fh));
   s.steps.forEach(p=>{
     bd.appendChild(el('<div class="step"><div class="sh">'+esc(p.k)+' <span class="pill">'+esc(p.m)+'</span></div>'
       + '<div class="who">교사</div><ul>'+p.t.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>'
